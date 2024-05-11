@@ -1,5 +1,5 @@
 
-import Parser from './frontend/parser.ts'
+import Parser from './backend/parser.ts'
 import { evaluate } from './runtime/interpreter.ts'
 
 repl()
