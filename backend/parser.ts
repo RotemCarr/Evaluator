@@ -1,4 +1,4 @@
-import { Statement, Program, Expression, BinaryExpr, NumericLiteral, NullLiteral, Identifier } from './ast.ts'
+import { Statement, Program, Expression, BinaryExpr, NumericLiteral, Identifier } from './ast.ts'
 import { tokenize, Token, TokenType } from './lexer.ts'
 
 export default class Parser {
@@ -94,13 +94,6 @@ export default class Parser {
                      kind: "Identifier",
                      symbol: this.advance().value,
                 } as Identifier
-
-            case TokenType.Null:
-                this.advance()
-                return {
-                    kind: "NullLiteral",
-                    value: "null",
-                } as NullLiteral
 
             case TokenType.Number:
                 return {

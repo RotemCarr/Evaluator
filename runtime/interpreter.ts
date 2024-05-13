@@ -1,11 +1,12 @@
-import { RuntimeValue, NumberValue, NullValue } from './values.ts'
-import { BinaryExpr, NumericLiteral, Program, Statement } from '../backend/ast.ts'
+import { RuntimeValue, NumberValue, MAKE_NULL } from './values.ts'
+import { BinaryExpr, Identifier, NumericLiteral, Program, Statement } from '../backend/ast.ts'
+import Enviroment from './enviroment.ts';
 
-function evaluateProgram(program: Program): RuntimeValue {
-    let lastEvaluated: RuntimeValue = {type: "null", value: "null"} as NullValue
+function evaluateProgram(program: Program, enviroment: Enviroment): RuntimeValue {
+    let lastEvaluated: RuntimeValue = MAKE_NULL()
 
     for (const statment of program.body) {
-        lastEvaluated = evaluate(statment)
+        lastEvaluated = evaluate(statment, enviroment)
     }
 
     return lastEvaluated
@@ -30,9 +31,9 @@ function evaluateNumericBinaryExpr(
         return {value: result, type: "number"} as NumberValue
 }
 
-function evaluateBinaryExpr(binaryOperation: BinaryExpr): RuntimeValue {
-    const leftHandSide = evaluate(binaryOperation.left)
-    const rightHandSide = evaluate(binaryOperation.right)
+function evaluateBinaryExpr(binaryOperation: BinaryExpr, enviroment: Enviroment): RuntimeValue {
+    const leftHandSide = evaluate(binaryOperation.left, enviroment)
+    const rightHandSide = evaluate(binaryOperation.right, enviroment)
 
     if (leftHandSide.type == "number" && rightHandSide.type == "number") {
         return evaluateNumericBinaryExpr(
@@ -41,22 +42,27 @@ function evaluateBinaryExpr(binaryOperation: BinaryExpr): RuntimeValue {
             binaryOperation.operator)
     }
 
-    return {type: "null", value: "null"} as NullValue
+    return MAKE_NULL()
 }
 
-export function evaluate(astNode: Statement): RuntimeValue {
+function evaluateIdentifier(identifier: Identifier, enviroment: Enviroment): RuntimeValue {
+    const value = enviroment.lookupVariable(identifier.symbol)
+    return value
+}
+
+export function evaluate(astNode: Statement, enviroment: Enviroment): RuntimeValue {
     switch (astNode.kind) {
         case 'NumericLiteral':
             return {value: (astNode as NumericLiteral).value, type: "number"} as NumberValue
 
-        case 'NullLiteral':
-            return {value: "null", type: "null"} as NullValue
+        case 'Identifier':
+            return evaluateIdentifier(astNode as Identifier, enviroment)
 
         case 'BinaryExpr':
-            return evaluateBinaryExpr(astNode as BinaryExpr)
+            return evaluateBinaryExpr(astNode as BinaryExpr, enviroment)
 
         case 'Program':
-            return evaluateProgram(astNode as Program)
+            return evaluateProgram(astNode as Program, enviroment)
 
         default:
             console.log("this AST Node is not interpretable:", astNode)
