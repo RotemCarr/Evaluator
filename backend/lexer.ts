@@ -3,11 +3,14 @@ export enum TokenType {
     Number,
     Identifier,
     String,
+
     //Keywords
     Let,
+    Const,
 
     //Operators
     Equals,
+    Semicolon,
     LeftParentheses,
     RightParentheses,
     Operator,
@@ -16,6 +19,7 @@ export enum TokenType {
 
 const KEYWORDS: Record<string, TokenType> = {
     let: TokenType.Let,
+    const: TokenType.Const,
 }
 
 export interface Token {
@@ -54,6 +58,8 @@ export function tokenize(sourceCode: string): Token[] {
             tokens.push(token(src.shift(), TokenType.Operator))
         } else if (src[0] == "=") {
             tokens.push(token(src.shift(), TokenType.Equals))
+        } else if (src[0] == ";") {
+            tokens.push(token(src.shift(), TokenType.Semicolon))
         } else {
             if (isInt(src[0])) {
                 let num = ""

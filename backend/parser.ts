@@ -1,4 +1,4 @@
-import { Statement, Program, Expression, BinaryExpr, NumericLiteral, Identifier } from './ast.ts'
+import { Statement, Program, Expression, BinaryExpr, NumericLiteral, Identifier, VariableDeclaration } from './ast.ts'
 import { tokenize, Token, TokenType } from './lexer.ts'
 
 export default class Parser {
@@ -44,19 +44,60 @@ export default class Parser {
     }
 
     private parseStatement(): Statement {
-        return this.parseExpr()
+        switch (this.at().type) {
+            case TokenType.Let:
+                return this.parseVariableDeclaration()
+
+            case TokenType.Const:
+                return this.parseVariableDeclaration()
+
+            default:
+                return this.parseExpression()
+        }
     }
 
-    private parseExpr(): Expression {
-        return this.parseAdditiveExpr()
+    private parseVariableDeclaration(): Statement {
+        const isConstant = this.advance().type == TokenType.Const
+        const identifier = this.expect(
+            TokenType.Identifier,
+            "Expecting identifier name after 'let' | 'const'"
+        ).value
+
+        if (this.at().type == TokenType.Semicolon) {
+            this.advance()
+            if (isConstant) {
+                throw "Cannot declare a constant without initializing it."
+            }
+            return {
+                kind: "VariableDeclaration",
+                identifier,
+                constant: false,
+            } as VariableDeclaration
+        }
+
+        this.expect(TokenType.Equals, "Expected '=' after identifier.")
+
+        const declaration = {
+            kind: "VariableDeclaration", 
+            value: this.parseExpression(),
+            identifier,
+            constant: isConstant,
+        } as VariableDeclaration
+
+        this.expect(TokenType.Semicolon, "Expected ';'")
+        return declaration
     }
 
-    private parseAdditiveExpr(): Expression {
-        let left = this.parseMultiplicativeExpr()
+    private parseExpression(): Expression {
+        return this.parseAdditiveExpression()
+    }
+
+    private parseAdditiveExpression(): Expression {
+        let left = this.parseMultiplicativeExpression()
 
         while (this.at().value == '+' || this.at().value == '-') {
             const operator = this.advance().value
-            const right = this.parseMultiplicativeExpr()
+            const right = this.parseMultiplicativeExpression()
             left = {
                 kind: "BinaryExpr",
                 left,
@@ -68,12 +109,12 @@ export default class Parser {
         return left
     }
 
-    private parseMultiplicativeExpr(): Expression {
-        let left = this.parsePrimaryExpr()
+    private parseMultiplicativeExpression(): Expression {
+        let left = this.parsePrimaryExpression()
 
         while (this.at().value == "*" || this.at().value == "/" || this.at().value == "%") {
             const operator = this.advance().value
-            const right = this.parsePrimaryExpr()
+            const right = this.parsePrimaryExpression()
             left = {
                 kind: "BinaryExpr",
                 left,
@@ -85,7 +126,7 @@ export default class Parser {
         return left
     }
 
-    private parsePrimaryExpr(): Expression {
+    private parsePrimaryExpression(): Expression {
         const token = this.at().type
 
         switch (token) {
@@ -103,7 +144,7 @@ export default class Parser {
 
             case TokenType.LeftParentheses: {
                 this.advance()
-                const value = this.parseExpr()
+                const value = this.parseExpression()
                 this.expect(
                     TokenType.RightParentheses,
                     "Expected ')'"
