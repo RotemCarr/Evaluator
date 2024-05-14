@@ -1,4 +1,4 @@
-import { Statement, Program, Expression, BinaryExpr, NumericLiteral, Identifier, VariableDeclaration } from './ast.ts'
+import { Statement, Program, Expression, BinaryExpr, NumericLiteral, Identifier, VariableDeclaration, AssignmentExpr } from './ast.ts'
 import { tokenize, Token, TokenType } from './lexer.ts'
 
 export default class Parser {
@@ -60,7 +60,7 @@ export default class Parser {
         const isConstant = this.advance().type == TokenType.Const
         const identifier = this.expect(
             TokenType.Identifier,
-            "Expecting identifier name after 'let' | 'const'"
+            "Expected identifier name after 'let' | 'const'"
         ).value
 
         if (this.at().type == TokenType.Semicolon) {
@@ -84,12 +84,28 @@ export default class Parser {
             constant: isConstant,
         } as VariableDeclaration
 
-        this.expect(TokenType.Semicolon, "Expected ';'")
+        //this.expect(TokenType.Semicolon, "Expected ';'")
+        if (this.at().type == TokenType.Semicolon) {
+            this.advance()
+        }
+        
         return declaration
     }
 
     private parseExpression(): Expression {
-        return this.parseAdditiveExpression()
+        return this.parseAssignmentExpression()
+    }
+
+    private parseAssignmentExpression(): Expression {
+        const left = this.parseAdditiveExpression()
+
+        if (this.at().type == TokenType.Equals) {
+            this.advance()
+            const value = this.parseAssignmentExpression()
+            return {value, assigned: left, kind: "AssignmentExpr"} as AssignmentExpr
+        }
+
+        return left
     }
 
     private parseAdditiveExpression(): Expression {

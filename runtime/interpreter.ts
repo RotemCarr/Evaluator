@@ -1,7 +1,7 @@
 import { RuntimeValue, NumberValue } from './values.ts'
-import { BinaryExpr, Identifier, NumericLiteral, Program, Statement, VariableDeclaration } from '../backend/ast.ts'
+import { AssignmentExpr, BinaryExpr, Identifier, NumericLiteral, Program, Statement, VariableDeclaration } from '../backend/ast.ts'
 import Enviroment from './enviroment.ts';
-import { evaluateIdentifier, evaluateBinaryExpr } from './evaluate/expressions.ts';
+import { evaluateIdentifier, evaluateBinaryExpr, evaluateAssignment } from './evaluate/expressions.ts';
 import { evalauteVariableDeclaration, evaluateProgram } from './evaluate/statments.ts';
 
 export function evaluate(astNode: Statement, enviroment: Enviroment): RuntimeValue {
@@ -11,6 +11,9 @@ export function evaluate(astNode: Statement, enviroment: Enviroment): RuntimeVal
 
         case 'Identifier':
             return evaluateIdentifier(astNode as Identifier, enviroment)
+
+        case 'AssignmentExpr':
+            return evaluateAssignment(astNode as AssignmentExpr, enviroment)
 
         case 'VariableDeclaration':
             return evalauteVariableDeclaration(astNode as VariableDeclaration, enviroment)

@@ -1,4 +1,4 @@
-import { BinaryExpr, Identifier } from '../../backend/ast.ts'
+import { AssignmentExpr, BinaryExpr, Identifier } from '../../backend/ast.ts'
 import Enviroment from '../enviroment.ts'
 import { evaluate } from '../interpreter.ts'
 import { NumberValue, RuntimeValue, MAKE_NULL } from '../values.ts'
@@ -39,4 +39,13 @@ export function evaluateBinaryExpr(binaryOperation: BinaryExpr, enviroment: Envi
 export function evaluateIdentifier(identifier: Identifier, enviroment: Enviroment): RuntimeValue {
     const value = enviroment.lookupVariable(identifier.symbol)
     return value
+}
+
+export function evaluateAssignment(node: AssignmentExpr, enviroment: Enviroment): RuntimeValue {
+    if (node.assigned.kind !== "Identifier") {
+        throw `Invalid variable identifier: ${JSON.stringify(node.assigned)}`
+    }
+
+    const variableName = (node.assigned as Identifier).symbol
+    return enviroment.assignVariable(variableName, evaluate(node.value, enviroment))
 }
