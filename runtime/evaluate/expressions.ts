@@ -1,7 +1,7 @@
-import { AssignmentExpr, BinaryExpr, Identifier } from '../../backend/ast.ts'
+import { AssignmentExpr, BinaryExpr, Identifier, ObjectLiteral } from '../../backend/ast.ts'
 import Enviroment from '../enviroment.ts'
 import { evaluate } from '../interpreter.ts'
-import { NumberValue, RuntimeValue, MAKE_NULL } from '../values.ts'
+import { NumberValue, RuntimeValue, MAKE_NULL, ObjectValue } from '../values.ts'
 
 function evaluateNumericBinaryExpr(
     leftHandSide: NumberValue,
@@ -48,4 +48,16 @@ export function evaluateAssignment(node: AssignmentExpr, enviroment: Enviroment)
 
     const variableName = (node.assigned as Identifier).symbol
     return enviroment.assignVariable(variableName, evaluate(node.value, enviroment))
+}
+
+export function evaluateObjectExpression(object: ObjectLiteral, enviroment: Enviroment): RuntimeValue {
+    const obj = {type: "object", properties: new Map()} as ObjectValue
+
+    for (const {key, value} of object.properties) {
+        const runtimeValue = (value == undefined) ? enviroment.lookupVariable(key) : evaluate(value, enviroment)
+
+        obj.properties.set(key, runtimeValue)
+    }
+
+    return obj
 }

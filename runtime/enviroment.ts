@@ -1,4 +1,16 @@
-import { RuntimeValue } from "./values.ts";
+import { MAKE_BOOL, MAKE_NULL, MAKE_NUMBER, RuntimeValue } from './values.ts'
+
+export function createGlobalScope() {
+  const enviroment = new Enviroment()
+
+  enviroment.declareVar("null", MAKE_NULL(), true)
+  enviroment.declareVar("true", MAKE_BOOL(true), true)
+  enviroment.declareVar("false", MAKE_BOOL(false), true)
+  enviroment.declareVar("pi", MAKE_NUMBER(3.14159), true)
+  enviroment.declareVar("e", MAKE_NUMBER(2.71828), true)
+
+  return enviroment
+}
 
 export default class Enviroment {
   private parent?: Enviroment
@@ -6,9 +18,12 @@ export default class Enviroment {
   private constants: Set<string>
 
   constructor(parent?: Enviroment) {
+    const global = parent ? true : false
     this.parent = parent
     this.variables = new Map()
     this.constants = new Set()
+
+
   }
 
   public declareVar(variableName: string, value: RuntimeValue, constant: boolean): RuntimeValue {

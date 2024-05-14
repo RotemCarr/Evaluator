@@ -1,1 +1,10 @@
-let x = 45 * (4 / 3)
+const prop = 20;
+
+const obj = {
+    x: 100,
+    y: 25,
+    prop,
+    complex: {
+        isComplex: true,
+    },
+};

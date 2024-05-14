@@ -2,6 +2,7 @@ export type ValueType =
 | "null" 
 | "boolean"
 | "number"
+| "object"
 
 export interface RuntimeValue {
     type: ValueType
@@ -32,4 +33,9 @@ export interface NumberValue extends RuntimeValue {
 
 export function MAKE_NUMBER(number = 0) {
     return {type: "number", value: number} as NumberValue
+}
+
+export interface ObjectValue extends RuntimeValue {
+    type: "object",
+    properties: Map<string, RuntimeValue>
 }

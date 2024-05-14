@@ -1,4 +1,4 @@
-import { Statement, Program, Expression, BinaryExpr, NumericLiteral, Identifier, VariableDeclaration, AssignmentExpr } from './ast.ts'
+import { Statement, Program, Expression, BinaryExpr, NumericLiteral, Identifier, VariableDeclaration, AssignmentExpr, Property, ObjectLiteral } from './ast.ts'
 import { tokenize, Token, TokenType } from './lexer.ts'
 
 export default class Parser {
@@ -97,7 +97,7 @@ export default class Parser {
     }
 
     private parseAssignmentExpression(): Expression {
-        const left = this.parseAdditiveExpression()
+        const left = this.parseObjectExpression()
 
         if (this.at().type == TokenType.Equals) {
             this.advance()
@@ -106,6 +106,38 @@ export default class Parser {
         }
 
         return left
+    }
+
+    private parseObjectExpression(): Expression {
+        if(this.at().type !== TokenType.LeftBrace) {
+            return this.parseAdditiveExpression()
+        }
+
+        this.advance()
+        const properties = new Array<Property>()
+
+        while (this.notEOF() && this.at().type !== TokenType.RightBrace) {
+            const key = this.expect(TokenType.Identifier, "Expected object key.").value
+
+            if (this.at().type == TokenType.Comma) {
+                this.advance()
+                properties.push({key, kind: "Property"})
+                continue
+            } else if (this.at().type == TokenType.RightBrace) {
+                properties.push({key, kind: "Property"})
+            }
+
+            this.expect(TokenType.Colon, "Expected ':'")
+            const value = this.parseExpression()
+
+            properties.push({key, kind: "Property", value})
+            if (this.at().type !== TokenType.RightBrace) {
+                this.expect(TokenType.Comma, "Expected ',' or '}'")
+            }
+        }
+
+        this.expect(TokenType.RightBrace, "Expected '}'")
+        return {kind: "ObjectLiteral", properties} as ObjectLiteral 
     }
 
     private parseAdditiveExpression(): Expression {

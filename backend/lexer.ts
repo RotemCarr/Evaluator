@@ -9,11 +9,15 @@ export enum TokenType {
     Const,
 
     //Operators
+    Operator,
     Equals,
+    Comma,
+    Colon,
     Semicolon,
     LeftParentheses,
     RightParentheses,
-    Operator,
+    LeftBrace,
+    RightBrace,
     EOF, //End Of File
 }
 
@@ -42,7 +46,7 @@ function isInt(str: string) {
 }
 
 function isSkippable(str: string) {
-    return (str == ' ' || str == '\n' || str == '\t')
+    return (str == ' ' || str == '\n' || str == '\t' || str == '\r')
 }
 
 export function tokenize(sourceCode: string): Token[] {
@@ -54,13 +58,21 @@ export function tokenize(sourceCode: string): Token[] {
             tokens.push(token(src.shift(), TokenType.LeftParentheses))
         } else if (src[0] == ")") {
             tokens.push(token(src.shift(), TokenType.RightParentheses))
+        } else if (src[0] == "{") {
+            tokens.push(token(src.shift(), TokenType.LeftBrace))
+        } else if (src[0] == "}") {
+            tokens.push(token(src.shift(), TokenType.RightBrace))
         } else if (src[0] == "+" || src[0] == "-" || src[0] == "*" || src[0] == "/" || src[0] == "%") {
             tokens.push(token(src.shift(), TokenType.Operator))
         } else if (src[0] == "=") {
             tokens.push(token(src.shift(), TokenType.Equals))
+        } else if (src[0] == ":") {
+            tokens.push(token(src.shift(), TokenType.Colon))
         } else if (src[0] == ";") {
             tokens.push(token(src.shift(), TokenType.Semicolon))
-        } else {
+        } else if (src[0] == ",") {
+            tokens.push(token(src.shift(), TokenType.Comma))
+        }  else {
             if (isInt(src[0])) {
                 let num = ""
                 while (src.length > 0 && isInt(src[0])) {
