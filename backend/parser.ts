@@ -1,4 +1,4 @@
-import { Statement, Program, Expression, BinaryExpr, NumericLiteral, Identifier, VariableDeclaration, AssignmentExpr, Property, ObjectLiteral } from './ast.ts'
+import { Statement, Program, Expression, BinaryExpr, NumericLiteral, Identifier, VariableDeclaration, AssignmentExpr, Property, ObjectLiteral, AbsExpr } from './ast.ts'
 import { tokenize, Token, TokenType } from './lexer.ts'
 
 export default class Parser {
@@ -198,6 +198,17 @@ export default class Parser {
                     "Expected ')'"
                 )
                 return value
+            }
+
+            case TokenType.Pipe: {
+                this.advance()
+                const value = this.parseExpression()
+                this.expect(TokenType.Pipe, "Expected '|'")
+
+                return {
+                    kind: "AbsExpr",
+                    value
+                } as AbsExpr
             }
 
             default:

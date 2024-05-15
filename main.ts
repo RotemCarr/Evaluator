@@ -1,6 +1,6 @@
 
 import Parser from './backend/parser.ts'
-import Enviroment, { createGlobalScope } from './runtime/enviroment.ts'
+import { createGlobalScope } from './runtime/enviroment.ts'
 import { evaluate } from './runtime/interpreter.ts'
 
 //repl()

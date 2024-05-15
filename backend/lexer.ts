@@ -11,6 +11,7 @@ export enum TokenType {
     //Operators
     Operator,
     Equals,
+    Pipe,
     Comma,
     Colon,
     Semicolon,
@@ -58,6 +59,8 @@ export function tokenize(sourceCode: string): Token[] {
             tokens.push(token(src.shift(), TokenType.LeftParentheses))
         } else if (src[0] == ")") {
             tokens.push(token(src.shift(), TokenType.RightParentheses))
+        } else if (src[0] == "|") {
+            tokens.push(token(src.shift(), TokenType.Pipe))
         } else if (src[0] == "{") {
             tokens.push(token(src.shift(), TokenType.LeftBrace))
         } else if (src[0] == "}") {

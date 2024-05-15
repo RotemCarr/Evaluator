@@ -1,4 +1,4 @@
-import { AssignmentExpr, BinaryExpr, Identifier, ObjectLiteral } from '../../backend/ast.ts'
+import { AbsExpr, AssignmentExpr, BinaryExpr, Identifier, ObjectLiteral } from '../../backend/ast.ts'
 import Enviroment from '../enviroment.ts'
 import { evaluate } from '../interpreter.ts'
 import { NumberValue, RuntimeValue, MAKE_NULL, ObjectValue } from '../values.ts'
@@ -34,6 +34,16 @@ export function evaluateBinaryExpr(binaryOperation: BinaryExpr, enviroment: Envi
     }
 
     return MAKE_NULL()
+}
+
+export function evaluateAbsExpression(abs: AbsExpr, enviroment: Enviroment): RuntimeValue {
+    const absValue = evaluate(abs.value, enviroment) as NumberValue
+
+    if(absValue.value < 0) {
+        return {type: "number", value: -(absValue.value)} as RuntimeValue
+    }
+
+    return {type: "number", value: absValue.value} as RuntimeValue
 }
 
 export function evaluateIdentifier(identifier: Identifier, enviroment: Enviroment): RuntimeValue {

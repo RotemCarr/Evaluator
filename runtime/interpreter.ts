@@ -1,8 +1,8 @@
 import { RuntimeValue, NumberValue } from './values.ts'
-import { AssignmentExpr, BinaryExpr, Identifier, NumericLiteral, ObjectLiteral, Program, Statement, VariableDeclaration } from '../backend/ast.ts'
+import { AbsExpr, AssignmentExpr, BinaryExpr, Identifier, NumericLiteral, ObjectLiteral, Program, Statement, VariableDeclaration } from '../backend/ast.ts'
 import Enviroment from './enviroment.ts';
-import { evaluateIdentifier, evaluateBinaryExpr, evaluateAssignment, evaluateObjectExpression } from './evaluate/expressions.ts';
-import { evalauteVariableDeclaration, evaluateProgram } from './evaluate/statments.ts';
+import { evaluateIdentifier, evaluateBinaryExpr, evaluateAssignment, evaluateObjectExpression, evaluateAbsExpression } from './evaluate/expressions.ts'
+import { evalauteVariableDeclaration, evaluateProgram } from './evaluate/statments.ts'
 
 export function evaluate(astNode: Statement, enviroment: Enviroment): RuntimeValue {
     switch (astNode.kind) {
@@ -14,6 +14,9 @@ export function evaluate(astNode: Statement, enviroment: Enviroment): RuntimeVal
 
         case 'ObjectLiteral':
             return evaluateObjectExpression(astNode as ObjectLiteral, enviroment)
+
+        case 'AbsExpr':
+            return evaluateAbsExpression(astNode as AbsExpr, enviroment)
 
         case 'AssignmentExpr':
             return evaluateAssignment(astNode as AssignmentExpr, enviroment)
