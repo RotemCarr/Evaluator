@@ -13,12 +13,15 @@ export enum TokenType {
     Equals,
     Pipe,
     Comma,
+    Dot,
     Colon,
     Semicolon,
     LeftParentheses,
     RightParentheses,
     LeftBrace,
     RightBrace,
+    LeftBracket,
+    RightBracket,
     EOF, //End Of File
 }
 
@@ -65,6 +68,10 @@ export function tokenize(sourceCode: string): Token[] {
             tokens.push(token(src.shift(), TokenType.LeftBrace))
         } else if (src[0] == "}") {
             tokens.push(token(src.shift(), TokenType.RightBrace))
+        } else if (src[0] == "[") {
+            tokens.push(token(src.shift(), TokenType.LeftBracket))
+        } else if (src[0] == "]") {
+            tokens.push(token(src.shift(), TokenType.RightBracket))
         } else if (src[0] == "+" || src[0] == "-" || src[0] == "*" || src[0] == "/" || src[0] == "%") {
             tokens.push(token(src.shift(), TokenType.Operator))
         } else if (src[0] == "=") {
@@ -75,7 +82,9 @@ export function tokenize(sourceCode: string): Token[] {
             tokens.push(token(src.shift(), TokenType.Semicolon))
         } else if (src[0] == ",") {
             tokens.push(token(src.shift(), TokenType.Comma))
-        }  else {
+        } else if (src[0] == ".") {
+            tokens.push(token(src.shift(), TokenType.Dot))
+        } else {
             if (isInt(src[0])) {
                 let num = ""
                 while (src.length > 0 && isInt(src[0])) {

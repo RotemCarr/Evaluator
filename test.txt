@@ -1,4 +1,4 @@
-const prop = 20;
+let prop = 20;
 
 const obj = {
     x: 100,
@@ -8,3 +8,5 @@ const obj = {
         isComplex: true,
     },
 };
+
+prop = obj.prop(isComplex()) + 5

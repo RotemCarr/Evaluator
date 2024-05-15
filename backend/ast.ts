@@ -6,6 +6,8 @@ export type NodeType =
 | "AssignmentExpr"
 | "BinaryExpr" 
 | "AbsExpr"
+| "MemberExpr"
+| "CallExpr"
 //Literals
 | "Property"
 | "ObjectLiteral"
@@ -68,4 +70,17 @@ export interface ObjectLiteral extends Expression {
 export interface AbsExpr extends Expression {
     kind: "AbsExpr",
     value: Expression
+}
+
+export interface CallExpr extends Expression {
+    kind: "CallExpr",
+    arguments: Expression[],
+    caller: Expression
+}
+
+export interface MemberExpr extends Expression {
+    kind: "MemberExpr",
+    object: ObjectLiteral,
+    property: Property,
+    computed: boolean
 }

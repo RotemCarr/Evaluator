@@ -1,4 +1,4 @@
-import { Statement, Program, Expression, BinaryExpr, NumericLiteral, Identifier, VariableDeclaration, AssignmentExpr, Property, ObjectLiteral, AbsExpr } from './ast.ts'
+import { Statement, Program, Expression, BinaryExpr, NumericLiteral, Identifier, VariableDeclaration, AssignmentExpr, Property, ObjectLiteral, AbsExpr, CallExpr, MemberExpr } from './ast.ts'
 import { tokenize, Token, TokenType } from './lexer.ts'
 
 export default class Parser {
@@ -158,11 +158,11 @@ export default class Parser {
     }
 
     private parseMultiplicativeExpression(): Expression {
-        let left = this.parsePrimaryExpression()
+        let left = this.parseCallMemberExpression()
 
         while (this.at().value == "*" || this.at().value == "/" || this.at().value == "%") {
             const operator = this.advance().value
-            const right = this.parsePrimaryExpression()
+            const right = this.parseCallMemberExpression()
             left = {
                 kind: "BinaryExpr",
                 left,
@@ -172,6 +172,80 @@ export default class Parser {
         }
 
         return left
+    }
+
+    private parseCallMemberExpression(): Expression {
+       const member = this.parseMemberExpression()
+
+       if (this.at().type == TokenType.LeftParentheses) {
+        return this.parseCallExpression(member)
+       }
+
+       return member
+    }
+
+    private parseCallExpression(caller: Expression): Expression {
+        let callExpression: Expression = {
+            kind: "CallExpr",
+            caller,
+            arguments: this.parseArguments(),
+        } as CallExpr
+
+        if (this.at().type == TokenType.LeftParentheses) {
+            callExpression = this.parseCallExpression(callExpression)
+        }
+
+        return callExpression
+    }
+
+    private parseArguments(): Expression[] {
+        this.expect(TokenType.LeftParentheses, "Expected '('")
+        const args = this.at().type == TokenType.RightParentheses ? [] : this.parseArgumentsList()
+
+        this.expect(TokenType.RightParentheses, "Expected ')'")
+        return args
+    }
+
+    private parseArgumentsList(): Expression[] {
+        const args = [this.parseAssignmentExpression()]
+
+        while (this.notEOF() && this.at().type == TokenType.Dot && this.advance()) {
+            args.push(this.parseAssignmentExpression())
+        }
+
+        return args
+    }
+
+    private parseMemberExpression(): Expression {
+        let object = this.parsePrimaryExpression()
+
+        while (this.at().type == TokenType.Dot || this.at().type == TokenType.LeftBracket) {
+            const operator = this.advance()
+            let property: Expression
+            let computed: boolean
+
+            if (operator.type == TokenType.Dot) {
+                computed = false
+                property = this.parsePrimaryExpression()
+
+                if (property.kind !== "Identifier") {
+                    throw `Expected identifier and found ${property.kind} instead.`
+                }
+            } else {
+                computed = true
+                property = this.parseExpression()
+                this.expect(TokenType.RightBracket, "Expected ']'")
+            }
+
+            object = {
+                kind: "MemberExpr", 
+                object,
+                property,
+                computed,
+            } as MemberExpr
+        }
+
+        return object
     }
 
     private parsePrimaryExpression(): Expression {
