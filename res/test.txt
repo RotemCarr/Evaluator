@@ -1,0 +1,10 @@
+fn add(x, y) {
+    let result = x + y
+    print(result)
+
+    result
+}
+
+const result = add(5,3)
+
+print(result)
