@@ -1,0 +1,65 @@
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@100..900&display=swap');
+
+*, *::before, *::after {
+    box-sizing: border-box;
+}
+
+body, h1, h2, h3, h4, p, figure, blockquote, dl, dd {
+    margin: 0
+}
+
+ul, ol {
+    padding: 0;
+    list-style: none;
+}
+
+body {
+    min-height: 100vh;
+    scroll-behavior: smooth;
+    text-rendering: optimizeSpeed;
+    line-height: 1;
+}
+
+a {
+    text-decoration: none;
+}
+
+button {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+}
+
+:focus {
+    outline: none;
+}
+
+img {
+    max-width: 100%;
+    display: block;
+    height: auto;
+}
+
+:root {
+    --text-color: rgb(5, 8, 12);
+    --secondary-text-color: rgb(127, 125, 129);
+    --accent-color: rgb(42, 50, 69);
+    --background-color: rgb(244, 244, 248);
+    --placeholder-text-color: rgb(127, 125, 129);
+}
+
+.layout {
+    display: flex;
+    flex-direction: row;
+    width: 100vw;
+    height: 100vh;
+    background: var(--background-color);
+    color: var(--text-color);
+    font-family: 'Outfit', sans-serif;
+}
+
+.layout > main {
+    background: var(--background-color);
+    flex: 1; 
+}

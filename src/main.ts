@@ -16,9 +16,6 @@ async function readTextFile(filePath: string): Promise<string> {
   }
 }
 
-//repl()
-run("./test.txt")
-
 async function run(source: string) {
     const parser = new Parser()
     const enviroment = createGlobalScope()
@@ -49,3 +46,5 @@ function repl() {
         console.log('------------------------------------------------------------\n\n')
     }
 }
+
+export { run, repl}

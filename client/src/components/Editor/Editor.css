@@ -1,0 +1,70 @@
+.editor-container {
+  display: flex;
+  font-family: 'Courier New', Courier, monospace;
+  height: 100%;
+  position: relative;
+}
+
+.line-numbers {
+  background-color: #272822;
+  color: #75715e;
+  padding: 10px 0;
+  text-align: right;
+  user-select: none;
+  border-right: 1px solid #444;
+}
+
+.line-number {
+  padding: 0 10px;
+  height: 1.5em;
+  font-size: 18px;
+}
+
+.code-container {
+  flex: 1;
+  display: flex;
+  position: relative;
+  cursor: text;
+}
+
+.code-editor {
+  font-size: 18px; /* Increased font size */
+  padding: 10px;
+  background-color: #272822;
+  color: #f8f8f2;
+  line-height: 1.5em;
+  white-space: pre;
+  overflow: auto; /* Allow scrolling if content overflows */
+  width: 100%;
+}
+
+.hidden-textarea {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 18px; /* Match font size with code editor */
+  border: none;
+  padding: 10px;
+  background-color: transparent; /* Set background to transparent */
+  color: inherit; /* Inherit text color from parent */
+  resize: none;
+  outline: none;
+  z-index: 1; /* Ensure textarea is above the code container */
+}
+
+.keyword {
+  color: #06dfe6;
+}
+
+.number {
+  color: #b5ee08;
+}
+
+button {
+  position: relative;
+  z-index: 2; /* Ensure button is rendered above the textarea */
+}
